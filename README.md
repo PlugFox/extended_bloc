@@ -8,12 +8,14 @@
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](https://en.wikipedia.org/wiki/WTFPL)
 [![effective_dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
   
+This package extends the functionality of the package [bloc](https://pub.dev/packages/bloc) by [Felix Angelov](https://github.com/felangel)  
+  
   
 ## EnumBloc<Event, State>  
   
 BLoC with primitive events.  
   
-Override [router] and create generators.  
+Override `router` and create generators.  
  
 #### Example usage:  
 ```dart
@@ -39,7 +41,7 @@ class MyEnumBloc extends EnumBloc<Event, State> {
   
 BLoC with complex events, containing internal data.  
   
-Override [router] and create generators.  
+Override `router` and create generators.  
   
 #### Example usage:  
 ```dart
