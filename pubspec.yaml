@@ -1,7 +1,7 @@
 name: extended_bloc
 description: >
   A predictable state management library that helps implement the BLoC design pattern.
-version: 0.0.1-dev
+version: 0.0.2-dev
 repository: https://github.com/PlugFox/extended_bloc/tree/master
 issue_tracker: https://github.com/PlugFox/extended_bloc/issues
 homepage: https://github.com/PlugFox/extended_bloc
@@ -17,3 +17,4 @@ dependencies:
 dev_dependencies:
   test_coverage: ^0.4.1
   test: ^1.14.6
+  bloc_test: ^7.0.3
