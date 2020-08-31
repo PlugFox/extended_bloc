@@ -9,9 +9,59 @@
 [![effective_dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
   
   
+## EnumBloc<Event, State>  
   
+BLoC with primitive events.  
   
+Override [router] and create generators.  
+ 
+#### Example usage:  
+```dart
+class MyEnumBloc extends EnumBloc<Event, State> {
 
+  MyEnumBloc() : super(State.initial);
+
+  @override
+  Map<Event, Function> get router =>
+    <Event, Function>{
+      Event.read : _read,
+    };
+
+  Stream<MockState> _read() async* {
+    yield State.performing;
+    // ...
+    yield State.fetched;
+  }
+}
+```
+  
+## RouterBloc<Event, State>  
+  
+BLoC with complex events, containing internal data.  
+  
+Override [router] and create generators.  
+  
+#### Example usage:  
+```dart
+class MyRouterBloc extends RouterBloc<Event, State> {
+
+  MyRouterBloc() : super(InitialState());
+
+  @override
+  Map<Type, Function> get router =>
+    <Type, Function>{
+      PerformEvent : _perform,
+    };
+
+  Stream<State> _perform(PerformEvent event) async* {
+    yield PerformingState();
+    // ...
+    yield PerformedState();
+  }
+}
+```
+  
+  
 ## Coverage  
   
 [![](https://codecov.io/gh/PlugFox/extended_bloc/branch/dev/graphs/sunburst.svg)](https://codecov.io/gh/PlugFox/extended_bloc/branch/master)  
