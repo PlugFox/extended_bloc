@@ -43,13 +43,13 @@ abstract class EnumBloc<Event, State> extends Bloc<Event, State> {
   Map<Event, Function> get router;
 
   @override
-  Stream<State> mapEventToState(Event event) async* {
+  Stream<State> mapEventToState(Event event) {
     final internalRouter = _internalRouter();
     assert(
       internalRouter.containsKey(event),
       '_eventRouter in RouterBloc must contain $event key',
     );
     if (!internalRouter.containsKey(event)) return;
-    yield* internalRouter[event]() as Stream<State>;
+    return internalRouter[event]() as Stream<State>;
   }
 }

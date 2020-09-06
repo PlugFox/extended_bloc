@@ -43,7 +43,7 @@ abstract class RouterBloc<Event, State> extends Bloc<Event, State> {
   Map<Type, Function> get router;
 
   @override
-  Stream<State> mapEventToState(Event event) async* {
+  Stream<State> mapEventToState(Event event) {
     final type = event.runtimeType;
     final internalRouter = _internalRouter();
     assert(
@@ -51,6 +51,6 @@ abstract class RouterBloc<Event, State> extends Bloc<Event, State> {
       'router in RouterBloc must contain $type key',
     );
     if (!internalRouter.containsKey(type)) return;
-    yield* internalRouter[type](event) as Stream<State>;
+    return internalRouter[type](event) as Stream<State>;
   }
 }
