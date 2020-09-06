@@ -49,7 +49,7 @@ abstract class EnumBloc<Event, State> extends Bloc<Event, State> {
       internalRouter.containsKey(event),
       '_eventRouter in RouterBloc must contain $event key',
     );
-    if (!internalRouter.containsKey(event)) return;
+    if (!internalRouter.containsKey(event)) return Stream<State>.empty();
     return internalRouter[event]() as Stream<State>;
   }
 }

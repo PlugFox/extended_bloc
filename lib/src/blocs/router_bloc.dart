@@ -50,7 +50,7 @@ abstract class RouterBloc<Event, State> extends Bloc<Event, State> {
       internalRouter.containsKey(type),
       'router in RouterBloc must contain $type key',
     );
-    if (!internalRouter.containsKey(type)) return;
+    if (!internalRouter.containsKey(type)) return Stream<State>.empty();
     return internalRouter[type](event) as Stream<State>;
   }
 }
