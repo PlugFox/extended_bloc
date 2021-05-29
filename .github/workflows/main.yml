@@ -2,9 +2,9 @@ name: 'extended_bloc'
 
 on:
   push:
-    branches: [ master, dev, feature/** ]
+    branches: [ master, develop, feature/** ]
   pull_request:
-    branches: [ master, dev, feature/** ]
+    branches: [ master, develop, feature/** ]
   workflow_dispatch:
 
 jobs:
