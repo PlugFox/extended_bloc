@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:extended_bloc/extended_bloc.dart';
 import 'package:test/test.dart';
-import 'package:extended_bloc/enum_bloc.dart';
 
 final Matcher throwsAssertionError = throwsA(isA<AssertionError>());
 
 void main() {
-  group('enum_bloc', () {
-    MockEnumBloc bloc;
-    BlocObserver observer;
+  group('bloc_enum', () {
+    late MockEnumBloc bloc;
+    late BlocObserver observer;
 
     setUp(() {
       bloc = MockEnumBloc();
@@ -19,7 +19,7 @@ void main() {
     test('Create', () async {
       expect(() async => await MockEnumBloc().close(), returnsNormally);
       expect(bloc is Bloc, isTrue);
-      expect(bloc is EnumBloc, isTrue);
+      expect(bloc is BlocEnum, isTrue);
       await bloc.close();
     });
 
@@ -27,7 +27,7 @@ void main() {
       bloc..add(MockEvent.read)..add(MockEvent.update);
 
       await expectLater(
-        bloc,
+        bloc.stream,
         emitsInOrder(
           <MockState>[
             MockState.performing,
@@ -43,29 +43,29 @@ void main() {
       await bloc.close();
     });
 
-    blocTest<EnumBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'expects [] when nothing is added',
       build: () => MockEnumBloc(),
-      expect: <MockState>[],
+      expect: () => <MockState>[],
     );
 
-    blocTest<EnumBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'Unknown event with assertion error',
       build: () => MockEnumBloc(),
       act: (bloc) => bloc.add(MockEvent.unknown),
-      errors: <TypeMatcher>[
+      errors: () => <TypeMatcher>[
         isA<AssertionError>(),
       ],
     );
 
-    blocTest<EnumBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'Update -> Update -> Delete',
       build: () => MockEnumBloc(),
       act: (bloc) => bloc
         ..add(MockEvent.update)
         ..add(MockEvent.update)
         ..add(MockEvent.delete),
-      expect: <MockState>[
+      expect: () => <MockState>[
         MockState.performing,
         MockState.updated,
         MockState.performing,
@@ -77,7 +77,8 @@ void main() {
   });
 }
 
-class MockEnumBloc extends EnumBloc<MockEvent, MockState> {
+class MockEnumBloc extends Bloc<MockEvent, MockState>
+    with BlocEnum<MockEvent, MockState> {
   MockEnumBloc() : super(MockState.initial);
 
   @override

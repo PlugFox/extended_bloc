@@ -2,7 +2,7 @@
 # https://dart.dev/guides/language/analysis-options/
 # https://dart-lang.github.io/linter/lints/
 
-#include: package:pedantic/analysis_options.1.9.0.yaml
+#include: package:pedantic/lib/analysis_options.1.9.0.yaml
 
 analyzer:
   exclude:
@@ -11,19 +11,23 @@ analyzer:
     # Build
     - 'build/**'
     # Generated code
-    - 'lib/**/*.g.dart'
+    - 'lib/**.g.dart'
+    - 'lib/**.freezed.dart'
+    - 'lib/**.graphql.dart'
+    - 'lib/**.gr.dart'
     - 'lib/generated_plugin_registrant.dart'
+    - '.test_coverage.dart'
+    - 'lib/pigeon.dart'
     # Assets
     - 'assets/**'
     # Mocks for test
     - 'test/data/**'
+    # Intl
+    - 'lib/generated/**'
 
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-
-  #enable-experiment:
-  #  - non-nullable
 
   errors:
     # Info
@@ -33,12 +37,13 @@ analyzer:
 
     # Warning
     unsafe_html: warning
-    prefer_relative_imports: warning
     no_logic_in_create_state: warning
     empty_catches: warning
+    lines_longer_than_80_chars: warning
 
     # Error
-    avoid_relative_lib_imports: error
+    always_use_package_imports: error
+    prefer_relative_imports: error
     avoid_slow_async_io: error
     avoid_types_as_parameter_names: error
     cancel_subscriptions: error
@@ -48,10 +53,6 @@ analyzer:
 
 linter:
   rules:
-    # Package
-    lines_longer_than_80_chars: true
-    public_member_api_docs: true
-
     # Disabled
     always_specify_types: false
     avoid_as: false
@@ -64,11 +65,17 @@ linter:
     use_key_in_widget_constructors: false
     avoid_web_libraries_in_flutter: false
     always_put_control_body_on_new_line: false
+    sort_pub_dependencies: false
+    always_use_package_imports: false
     #diagnostic_describe_all_properties: false # ???
+    #prefer_asserts_with_message: true # пока очень много писать однотипных понятных предупреждений
 
     # Enabled
+    prefer_relative_imports: true
+    public_member_api_docs: true
+    lines_longer_than_80_chars: true
     always_put_required_named_parameters_first: true
-    avoid_annotating_with_dynamic: true
+    #avoid_annotating_with_dynamic: true
     avoid_bool_literals_in_conditional_expressions: true
     avoid_double_and_int_checks: true
     avoid_escaping_inner_quotes: true
@@ -106,7 +113,6 @@ linter:
     package_prefixed_library_names: true
     parameter_assignments: true
     prefer_asserts_in_initializer_lists: true
-    prefer_asserts_with_message: true
     prefer_const_constructors: true
     prefer_const_constructors_in_immutables: true
     prefer_const_declarations: true
@@ -126,7 +132,6 @@ linter:
     provide_deprecation_message: true
     sized_box_for_whitespace: true
     sort_child_properties_last: true
-    sort_pub_dependencies: true
     test_types_in_equals: true
     throw_in_finally: true
     unnecessary_null_aware_assignments: true
@@ -197,7 +202,6 @@ linter:
     directives_ordering: true
     package_api_docs: true
     implementation_imports: true
-    prefer_relative_imports: true
     prefer_interpolation_to_compose_strings: true
     unnecessary_brace_in_string_interps: true
     avoid_function_literals_in_foreach_calls: true
@@ -216,7 +220,7 @@ linter:
     avoid_returning_null: true
     avoid_returning_this: true
     type_annotate_public_apis: true
-    avoid_types_on_closure_parameters: true
+    #avoid_types_on_closure_parameters: true # убрал, потому что ругается на запись `onError: (dynamic error, StackTrace stackTrace)`
     avoid_private_typedef_functions: true
     avoid_positional_boolean_parameters: true
     hash_and_equals: true

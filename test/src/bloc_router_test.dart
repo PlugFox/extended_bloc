@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:extended_bloc/extended_bloc.dart';
 import 'package:test/test.dart';
-import 'package:extended_bloc/router_bloc.dart';
 
 final Matcher throwsAssertionError = throwsA(isA<AssertionError>());
 
 void main() {
-  group('router_bloc', () {
-    MockRouterBloc bloc;
-    BlocObserver observer;
+  group('bloc_router', () {
+    late MockRouterBloc bloc;
+    late BlocObserver observer;
 
     setUp(() {
       bloc = MockRouterBloc();
@@ -16,18 +16,18 @@ void main() {
       Bloc.observer = observer;
     });
 
-    test('Create', () async {
+    test('create', () async {
       expect(() async => await MockRouterBloc().close(), returnsNormally);
       expect(bloc is Bloc, isTrue);
-      expect(bloc is RouterBloc, isTrue);
+      expect(bloc is BlocRouter, isTrue);
       await bloc.close();
     });
 
-    test('Stubbing', () async {
+    test('stubbing', () async {
       bloc..add(PerformEvent())..add(PerformEvent());
 
       await expectLater(
-        bloc,
+        bloc.stream,
         emitsInOrder(
           <MockState>[
             MockState.performing,
@@ -43,26 +43,26 @@ void main() {
       await bloc.close();
     });
 
-    blocTest<RouterBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'expects [] when nothing is added',
       build: () => MockRouterBloc(),
-      expect: <MockState>[],
+      expect: () => <MockState>[],
     );
 
-    blocTest<RouterBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'Unknown event with assertion error',
       build: () => MockRouterBloc(),
       act: (bloc) => bloc.add(UnknownEvent()),
-      errors: <TypeMatcher>[
+      errors: () => <TypeMatcher>[
         isA<AssertionError>(),
       ],
     );
 
-    blocTest<RouterBloc<MockEvent, MockState>, MockState>(
+    blocTest<Bloc<MockEvent, MockState>, MockState>(
       'Perform -> Perform',
       build: () => MockRouterBloc(),
       act: (bloc) => bloc..add(PerformEvent())..add(PerformEvent()),
-      expect: <MockState>[
+      expect: () => <MockState>[
         MockState.performing,
         MockState.performed,
         MockState.performing,
@@ -78,7 +78,8 @@ class PerformEvent with MockEvent {}
 
 class UnknownEvent with MockEvent {}
 
-class MockRouterBloc extends RouterBloc<MockEvent, MockState> {
+class MockRouterBloc extends Bloc<MockEvent, MockState>
+    with BlocRouter<MockEvent, MockState> {
   MockRouterBloc() : super(MockState.initial);
 
   @override
