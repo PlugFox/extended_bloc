@@ -1,31 +1,57 @@
-name: extended_bloc
+name: 'extended_bloc'
+
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, feature/** ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, dev, feature/** ]
+  workflow_dispatch:
+
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     container:
       image: google/dart:latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Dependencies
-        run: pub get
-      - name: Format
-        run: dartfmt --dry-run --set-exit-if-changed lib
-      - name: Run analyzer
-        run: dartanalyzer --fatal-infos --fatal-warnings lib example test
-      - name: Run tests
-        run: pub run test_coverage --no-badge --print-test-output --min-coverage 0
-      - name: Upload coverage to Codecov
+
+      - name: 🚂 Get latest code
+        uses: actions/checkout@v2.3.2
+          fetch-depth: 2
+
+      - name: 🚃 Cache pub modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-pub-modules
+        with:
+          path: |
+            $PWD/.pub_cache/
+          key: ${{ runner.os }}-dart
+
+      - name: 🗄️ Export pub cache directory
+        run: export PUB_CACHE=$PWD/.pub_cache/
+
+      - name: 🚚 Get dependencies
+        run: dart pub get
+
+      - name: ✍️ Check format
+        run: dart format --set-exit-if-changed -l 80 -o none .
+
+      - name: 🔧 Check sources with analyzer
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: 🏗️ Run tests
+        run: |
+          dart test --coverage=coverage \
+            && dart run coverage:format_coverage --lcov --in=coverage \
+            --out=coverage/lcov.info --packages=.packages --report-on=lib
+
+      - name: 📥 Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Check Code Coverage
-        uses: ChicagoFlutter/lcov-cop@v1.0.2
+
+      - name: ✔ Check code coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
         with:
           path: coverage/lcov.info
-          min_coverage: 100
-          exclude: "**/*.g.dart"
