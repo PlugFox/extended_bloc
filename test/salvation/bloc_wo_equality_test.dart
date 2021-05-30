@@ -104,7 +104,7 @@ class _FakeErrorBloc extends Bloc<_FakeEvent, _FakeState>
 
   @override
   Stream<_FakeState> mapEventToState(_FakeEvent event) async* {
-    emit(const _FakeState());
+    yield const _FakeState();
   }
 
   @override
