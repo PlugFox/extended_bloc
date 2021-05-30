@@ -47,6 +47,7 @@ jobs:
 
       - name: 📥 Upload coverage to Codecov
         uses: codecov/codecov-action@v1
+        if: contains( github.ref, 'master' )
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
