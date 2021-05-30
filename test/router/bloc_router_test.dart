@@ -5,17 +5,17 @@ import 'package:test/test.dart';
 
 void main() {
   group('bloc_router', () {
-    late _MockRouterBloc bloc;
+    late _FakeRouterBloc bloc;
     late BlocObserver observer;
 
     setUp(() {
-      bloc = _MockRouterBloc();
+      bloc = _FakeRouterBloc();
       observer = BlocObserver();
       Bloc.observer = observer;
     });
 
     test('create', () async {
-      expect(() async => await _MockRouterBloc().close(), returnsNormally);
+      expect(() async => await _FakeRouterBloc().close(), returnsNormally);
       expect(bloc is Bloc, isTrue);
       expect(bloc is BlocRouter, isTrue);
       await bloc.close();
@@ -27,71 +27,71 @@ void main() {
       await expectLater(
         bloc.stream,
         emitsInOrder(
-          <_MockState>[
-            _MockState.performing,
-            _MockState.performed,
-            _MockState.performing,
-            _MockState.performed,
+          <_FakeState>[
+            _FakeState.performing,
+            _FakeState.performed,
+            _FakeState.performing,
+            _FakeState.performed,
           ],
         ),
       );
 
-      expect(bloc.state, equals(_MockState.performed));
+      expect(bloc.state, equals(_FakeState.performed));
 
       await bloc.close();
     });
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'expects [] when nothing is added',
-      build: () => _MockRouterBloc(),
-      expect: () => <_MockState>[],
+      build: () => _FakeRouterBloc(),
+      expect: () => <_FakeState>[],
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'Unknown event with assertion error',
-      build: () => _MockRouterBloc(),
+      build: () => _FakeRouterBloc(),
       act: (bloc) => bloc.add(_UnknownEvent()),
       errors: () => <TypeMatcher>[
         isA<AssertionError>(),
       ],
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'Perform -> Perform',
-      build: () => _MockRouterBloc(),
+      build: () => _FakeRouterBloc(),
       act: (bloc) => bloc..add(_PerformEvent())..add(_PerformEvent()),
-      expect: () => <_MockState>[
-        _MockState.performing,
-        _MockState.performed,
-        _MockState.performing,
-        _MockState.performed,
+      expect: () => <_FakeState>[
+        _FakeState.performing,
+        _FakeState.performed,
+        _FakeState.performing,
+        _FakeState.performed,
       ],
     );
   });
 }
 
-mixin _MockEvent {}
+mixin _FakeEvent {}
 
-class _PerformEvent with _MockEvent {}
+class _PerformEvent with _FakeEvent {}
 
-class _UnknownEvent with _MockEvent {}
+class _UnknownEvent with _FakeEvent {}
 
-class _MockRouterBloc extends Bloc<_MockEvent, _MockState>
-    with BlocRouter<_MockEvent, _MockState> {
-  _MockRouterBloc() : super(_MockState.initial);
+class _FakeRouterBloc extends Bloc<_FakeEvent, _FakeState>
+    with BlocRouter<_FakeEvent, _FakeState> {
+  _FakeRouterBloc() : super(_FakeState.initial);
 
   @override
   Map<Type, Function> get router => <Type, Function>{
         _PerformEvent: _perform,
       };
 
-  Stream<_MockState> _perform(_PerformEvent event) async* {
-    yield _MockState.performing;
-    yield _MockState.performed;
+  Stream<_FakeState> _perform(_PerformEvent event) async* {
+    yield _FakeState.performing;
+    yield _FakeState.performed;
   }
 }
 
-enum _MockState {
+enum _FakeState {
   initial,
   performing,
   performed,
