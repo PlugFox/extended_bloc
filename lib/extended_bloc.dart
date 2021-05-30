@@ -1,4 +1,7 @@
+@experimental
 library extended_bloc;
+
+import 'package:meta/meta.dart' show experimental;
 
 export 'package:bloc/bloc.dart';
 
