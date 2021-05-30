@@ -5,110 +5,110 @@ import 'package:test/test.dart';
 
 void main() {
   group('bloc_enum', () {
-    late _MockEnumBloc bloc;
+    late _FakeEnumBloc bloc;
     late BlocObserver observer;
 
     setUp(() {
-      bloc = _MockEnumBloc();
+      bloc = _FakeEnumBloc();
       observer = BlocObserver();
       Bloc.observer = observer;
     });
 
     test('Create', () async {
-      expect(() async => await _MockEnumBloc().close(), returnsNormally);
+      expect(() async => await _FakeEnumBloc().close(), returnsNormally);
       expect(bloc is Bloc, isTrue);
       expect(bloc is BlocEnum, isTrue);
       await bloc.close();
     });
 
     test('Stubbing', () async {
-      bloc..add(_MockEvent.read)..add(_MockEvent.update);
+      bloc..add(_FakeEvent.read)..add(_FakeEvent.update);
 
       await expectLater(
         bloc.stream,
         emitsInOrder(
-          <_MockState>[
-            _MockState.performing,
-            _MockState.fetched,
-            _MockState.performing,
-            _MockState.updated,
+          <_FakeState>[
+            _FakeState.performing,
+            _FakeState.fetched,
+            _FakeState.performing,
+            _FakeState.updated,
           ],
         ),
       );
 
-      expect(bloc.state, equals(_MockState.updated));
+      expect(bloc.state, equals(_FakeState.updated));
 
       await bloc.close();
     });
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'expects [] when nothing is added',
-      build: () => _MockEnumBloc(),
-      expect: () => <_MockState>[],
+      build: () => _FakeEnumBloc(),
+      expect: () => <_FakeState>[],
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'Unknown event with assertion error',
-      build: () => _MockEnumBloc(),
-      act: (bloc) => bloc.add(_MockEvent.unknown),
+      build: () => _FakeEnumBloc(),
+      act: (bloc) => bloc.add(_FakeEvent.unknown),
       errors: () => <TypeMatcher>[
         isA<AssertionError>(),
       ],
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'Update -> Update -> Delete',
-      build: () => _MockEnumBloc(),
+      build: () => _FakeEnumBloc(),
       act: (bloc) => bloc
-        ..add(_MockEvent.update)
-        ..add(_MockEvent.update)
-        ..add(_MockEvent.delete),
-      expect: () => <_MockState>[
-        _MockState.performing,
-        _MockState.updated,
-        _MockState.performing,
-        _MockState.updated,
-        _MockState.performing,
-        _MockState.deleted,
+        ..add(_FakeEvent.update)
+        ..add(_FakeEvent.update)
+        ..add(_FakeEvent.delete),
+      expect: () => <_FakeState>[
+        _FakeState.performing,
+        _FakeState.updated,
+        _FakeState.performing,
+        _FakeState.updated,
+        _FakeState.performing,
+        _FakeState.deleted,
       ],
     );
   });
 }
 
-class _MockEnumBloc extends Bloc<_MockEvent, _MockState>
-    with BlocEnum<_MockEvent, _MockState> {
-  _MockEnumBloc() : super(_MockState.initial);
+class _FakeEnumBloc extends Bloc<_FakeEvent, _FakeState>
+    with BlocEnum<_FakeEvent, _FakeState> {
+  _FakeEnumBloc() : super(_FakeState.initial);
 
   @override
-  Map<_MockEvent, Function> get router => <_MockEvent, Function>{
-        _MockEvent.create: _create,
-        _MockEvent.read: _read,
-        _MockEvent.update: _update,
-        _MockEvent.delete: _delete,
+  Map<_FakeEvent, Function> get router => <_FakeEvent, Function>{
+        _FakeEvent.create: _create,
+        _FakeEvent.read: _read,
+        _FakeEvent.update: _update,
+        _FakeEvent.delete: _delete,
       };
 
-  Stream<_MockState> _create() async* {
-    yield _MockState.performing;
-    yield _MockState.created;
+  Stream<_FakeState> _create() async* {
+    yield _FakeState.performing;
+    yield _FakeState.created;
   }
 
-  Stream<_MockState> _read() async* {
-    yield _MockState.performing;
-    yield _MockState.fetched;
+  Stream<_FakeState> _read() async* {
+    yield _FakeState.performing;
+    yield _FakeState.fetched;
   }
 
-  Stream<_MockState> _update() async* {
-    yield _MockState.performing;
-    yield _MockState.updated;
+  Stream<_FakeState> _update() async* {
+    yield _FakeState.performing;
+    yield _FakeState.updated;
   }
 
-  Stream<_MockState> _delete() async* {
-    yield _MockState.performing;
-    yield _MockState.deleted;
+  Stream<_FakeState> _delete() async* {
+    yield _FakeState.performing;
+    yield _FakeState.deleted;
   }
 }
 
-enum _MockEvent {
+enum _FakeEvent {
   create,
   read,
   update,
@@ -116,7 +116,7 @@ enum _MockEvent {
   unknown,
 }
 
-enum _MockState {
+enum _FakeState {
   initial,
   performing,
   created,

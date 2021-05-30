@@ -6,93 +6,122 @@ import 'package:test/test.dart';
 
 void main() {
   group('wo_equality', () {
-    late _MockBloc bloc;
+    late _FakeBloc fakeBloc;
     late BlocObserver observer;
 
     setUp(() {
-      bloc = _MockBloc();
+      fakeBloc = _FakeBloc();
       observer = BlocObserver();
       Bloc.observer = observer;
     });
 
     test('create', () async {
-      expect(() async => await _MockBloc().close(), returnsNormally);
-      expect(bloc is Bloc, isTrue);
-      expect(bloc is BlocWithoutEquality, isTrue);
-      await bloc.close();
+      expect(() async => await _FakeBloc().close(), returnsNormally);
+      expect(fakeBloc is Bloc, isTrue);
+      expect(fakeBloc is BlocWithoutEquality, isTrue);
+      await fakeBloc.close();
     });
 
     test(
       'order',
       () async {
-        bloc..add(_MockEvent())..add(_MockEvent());
+        fakeBloc..add(_FakeEvent())..add(_FakeEvent());
+
+        expect(fakeBloc.state, equals(const _FakeState()));
 
         await expectLater(
-          bloc.stream,
+          fakeBloc.stream,
           emitsInOrder(
-            <_MockState>[
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
-              const _MockState(),
+            <_FakeState>[
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
+              const _FakeState(),
             ],
           ),
         );
 
-        expect(bloc.state, equals(const _MockState()));
+        expect(fakeBloc.state, equals(const _FakeState()));
 
-        await bloc.close();
+        await fakeBloc.close();
       },
       timeout: const Timeout(Duration(seconds: 5)),
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'expects [] when nothing is added',
-      build: () => _MockBloc(),
-      expect: () => <_MockState>[],
+      build: () => _FakeBloc(),
+      expect: () => <_FakeState>[],
     );
 
-    blocTest<Bloc<_MockEvent, _MockState>, _MockState>(
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
       'same events added',
-      build: () => _MockBloc(),
-      act: (bloc) => bloc..add(_MockEvent())..add(_MockEvent()),
-      expect: () => <_MockState>[
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
-        const _MockState(),
+      build: () => _FakeBloc(),
+      act: (bloc) => bloc..add(_FakeEvent())..add(_FakeEvent()),
+      expect: () => <_FakeState>[
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+        const _FakeState(),
+      ],
+    );
+
+    blocTest<Bloc<_FakeEvent, _FakeState>, _FakeState>(
+      '_FakeErrorBloc with broken emit throws Exception when event is added',
+      build: () => _FakeErrorBloc(),
+      act: (bloc) => bloc.add(_FakeEvent()),
+      errors: () => <Object>[
+        isA<Exception>(),
       ],
     );
   });
 }
 
-class _MockBloc extends Bloc<_MockEvent, _MockState>
-    with BlocWithoutEquality<_MockEvent, _MockState> {
-  _MockBloc() : super(const _MockState());
+class _FakeBloc extends Bloc<_FakeEvent, _FakeState>
+    with BlocWithoutEquality<_FakeEvent, _FakeState> {
+  _FakeBloc() : super(const _FakeState());
 
   @override
-  Stream<_MockState> mapEventToState(_MockEvent event) async* {
-    yield const _MockState();
-    yield const _MockState();
-    emit(const _MockState());
-    emit(const _MockState());
+  Stream<_FakeState> mapEventToState(_FakeEvent event) async* {
+    yield const _FakeState();
+    yield const _FakeState();
+    emit(const _FakeState());
+    emit(const _FakeState());
   }
 }
 
-class _MockEvent {}
+class _FakeErrorBloc extends Bloc<_FakeEvent, _FakeState>
+    with BlocWithoutEquality<_FakeEvent, _FakeState> {
+  _FakeErrorBloc() : super(const _FakeState());
+
+  @override
+  Stream<_FakeState> mapEventToState(_FakeEvent event) async* {
+    emit(const _FakeState());
+  }
+
+  @override
+  Never emit(_FakeState state) => throw Exception('Some error');
+
+  @override
+  void onError(Object error, StackTrace stackTrace) {
+    super.onError(error, stackTrace);
+  }
+}
+
+class _FakeEvent {}
 
 @immutable
-class _MockState {
+class _FakeState {
   @literal
-  const _MockState();
+  const _FakeState();
 
   @override
   bool operator ==(Object other) => true;
