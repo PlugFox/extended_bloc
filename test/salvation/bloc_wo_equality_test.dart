@@ -109,11 +109,6 @@ class _FakeErrorBloc extends Bloc<_FakeEvent, _FakeState>
 
   @override
   Never emit(_FakeState state) => throw Exception('Some error');
-
-  @override
-  void onError(Object error, StackTrace stackTrace) {
-    super.onError(error, stackTrace);
-  }
 }
 
 class _FakeEvent {}
