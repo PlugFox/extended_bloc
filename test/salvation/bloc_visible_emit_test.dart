@@ -82,7 +82,7 @@ void main() {
 }
 
 class _MockBloc extends Bloc<_MockEvent, _MockState>
-    with BlocVisibleEmit<_MockEvent, _MockState> {
+    with BlocVisibleEmit<_MockState> {
   _MockBloc() : super(_MockState.initial);
 
   @override

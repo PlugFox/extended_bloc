@@ -3,8 +3,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:extended_bloc/extended_bloc.dart';
 import 'package:test/test.dart';
 
-final Matcher throwsAssertionError = throwsA(isA<AssertionError>());
-
 void main() {
   group('bloc_enum', () {
     late _MockEnumBloc bloc;

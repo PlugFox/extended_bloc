@@ -25,7 +25,8 @@ import 'package:meta/meta.dart';
 /// }
 /// ```
 ///
-mixin BlocEnum<Event, State> on Bloc<Event, State> {
+mixin BlocEnum<Event extends Object, State extends Object>
+    on Bloc<Event, State> {
   Map<Event, Function>? _routerCache;
   Map<Event, Function> _internalRouter() => _routerCache ??= router;
 
